@@ -48,7 +48,7 @@ module Tools
     puts
     show_code(code)
     show_code(input)
-    print'You won nice!!! '
+    print 'You won nice!!! '
     show_code(code)
     show_code(input)
     puts
@@ -215,12 +215,11 @@ class User_play < Code
       hint_array
     end
     player_input.each do |color| # check if the color is in the code
-      if copy.include?(color)        
+      if copy.include?(color)
         hint_array.push(@@WHITEBALL)
         copy.each_with_index { |color_inside, index| break copy.delete_at(index) if color == color_inside }
       end
       hint_array # array which contain the hints
-        
     end
     hint_array.shuffle!
     @@history.push(player_input)
