@@ -93,6 +93,7 @@ class Code
   def initialize
     @@number_of_colors = 4
     code_create(@@number_of_colors)
+    show_code(@@cripted)
   end
 
   private
@@ -105,7 +106,7 @@ class Code
     duplicate?
     return @@cripted = @to_be_cripted.shuffle.slice(0, number_of_colors) if @duplicate == 'N'
 
-    number_of_colors.times do
+    2.times do
       @to_be_cripted += @to_be_cripted
     end
     @@cripted = @to_be_cripted.shuffle.slice(0, number_of_colors)
@@ -215,9 +216,9 @@ class User_play < Code
       hint_array
     end
     player_input.each do |color| # check if the color is in the code
-      if copy.include?(color)
+      if copy.include?(color)        
         hint_array.push(@@WHITEBALL)
-        copy.delete(color)
+        copy.each_with_index { |color_inside, index| break copy.delete_at(index) if color == color_inside }
       end
       hint_array # array which contain the hints
         
