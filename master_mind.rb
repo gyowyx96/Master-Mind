@@ -3,9 +3,8 @@
 require_relative 'colors'
 
 module Tools
-  public
   @@WHITEBALL = '◉'.gray
-  @@REDBALL = '◉'.red  
+  @@REDBALL = '◉'.red
 
   def help_txt
     color_create
@@ -84,57 +83,56 @@ module Tools
   end
 
   # check for the win or keep going
-  def compare_with_code(player_choise, code, copy_of_code)
-    return end_game(player_choise, code) if player_choise == code
+  def compare_with_code(player_choice, code, copy_of_code)
+    return end_game(player_choice, code) if player_choice == code
 
-    check_color(player_choise, code, copy_of_code)
+    check_color(player_choice, code, copy_of_code)
   end
 
   # checks the user input and convert it to the colors array
-  def check_input(player_choise)
+  def check_input(player_choice)
     input = gets.chomp
-    input_array = input.split(" ").slice(0, 4)
-    if input_array.size == 4 
+    input_array = input.split(' ').slice(0, 4)
+    if input_array.size == 4
       input_array.each do |i|
         color = i.to_s.slice(0)
         case color
         when 'b'
-          @player_choise.push(@blue)
+          @player_choice.push(@blue)
         when 'r'
-          @player_choise.push(@red)
+          @player_choice.push(@red)
         when 'c'
-          @player_choise.push(@cyan)
+          @player_choice.push(@cyan)
         when 'g'
-          @player_choise.push(@green)
+          @player_choice.push(@green)
         when 'p'
-          @player_choise.push(@purple)
+          @player_choice.push(@purple)
         when 'w'
-          @player_choise.push(@white)
+          @player_choice.push(@white)
         end
       end
-      if @player_choise.size == 4
-        @player_choise
+      if @player_choice.size == 4
+        @player_choice
       else
-        @player_choise = [] 
-        puts "Enter a valid combination of colors!"
-        check_input(player_choise)
+        @player_choice = []
+        puts 'Enter a valid combination of colors!'
+        check_input(player_choice)
       end
-    elsif input_array.include?("help") or input_array.include?("colors")
+    elsif input_array.include?('help') or input_array.include?('colors')
       asking_help(input_array)
-      @player_choise = []
+      @player_choice = []
       print "\nChoose what color you wanna place from left to right in a single line
       (ex: blue, w, g r) or ask for help with 'help' or 'colors': "
-      check_input(player_choise)
+      check_input(player_choice)
 
     else
-      puts "Enter a valid combination of colors!"
-      check_input(player_choise)
+      puts 'Enter a valid combination of colors!'
+      check_input(player_choice)
     end
-
   end
 
-  # gives the user a feedback with hints for the choise he made
-  def check_color(player_input, code, copy_of_code)  
+  # gives the user a feedback with hints for the choice he made
+  def check_color(player_input, code, copy_of_code)
     hint_array = []
     copy = copy_of_code.clone
     player_input.each_with_index do |color, index| # checks if the current color is in the right place
@@ -156,7 +154,6 @@ module Tools
     @@history.push(hint_array)
     show_history(@@history)
   end
-
 end
 
 # class that create an object which contain the code to decript
@@ -195,13 +192,13 @@ end
 
 # cotain the methods that ask useres for input and display them showing the play-ground
 class User_play < Code
-  include Tools  
+  include Tools
 
   private
 
   def initialize
     help_txt
-    Code.new    
+    Code.new
     @copy_of_cripted = @@cripted.clone
     create_playground
   end
@@ -213,7 +210,7 @@ class User_play < Code
     @end = false
     until @tries.zero? || @end == true # tries is the difficulty, i will implement a selector for it
       puts "\nYou still have: #{@tries} tries"
-      compare_with_code(gets_player_choise, @@cripted, @copy_of_cripted)
+      compare_with_code(gets_player_choice, @@cripted, @copy_of_cripted)
       @tries -= 1
     end
     if @end == false
@@ -225,7 +222,7 @@ class User_play < Code
     puts 'It was a pleasure to play with you bye bye !'
   end
 
-  # asks for how many tries it should go on 
+  # asks for how many tries it should go on
   def get_tries
     tries_array = Range.new(1, 15).to_a
     @tries = gets.chomp.to_i
@@ -236,15 +233,14 @@ class User_play < Code
   end
 
   # gets the input from the player
-  def gets_player_choise
+  def gets_player_choice
     color_create
-    @player_choise = []
+    @player_choice = []
     print "\nChoose what color you wanna place from left to right in a single line
     (ex: blue, w, g r) or ask for help with 'help' or 'colors': "
-    check_input(@player_choise)  
-    @player_choise
+    check_input(@player_choice)
+    @player_choice
   end
 end
 
 User_play.new
-
