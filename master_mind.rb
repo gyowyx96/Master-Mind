@@ -93,7 +93,6 @@ class Code
   def initialize
     @@number_of_colors = 4
     code_create(@@number_of_colors)
-    show_code(@@cripted)
   end
 
   private
