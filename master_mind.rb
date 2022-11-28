@@ -3,6 +3,10 @@
 require_relative 'colors'
 
 module Tools
+  public
+  @@WHITEBALL = '◉'.gray
+  @@REDBALL = '◉'.red  
+
   def help_txt
     color_create
     puts "Here is the rule to play the game:\n
@@ -14,15 +18,15 @@ module Tools
           3)If you still need help type 'colors' or 'rules' when asked for a list of colors or this ruleset!\n\n"
   end
 
-  def asking_help
-    print "If you do need help type 'colors', 'rules' or any other key to keep going: "
-    help = gets.chomp.capitalize!
-    case help
-    when 'Colors'
-      color_create
-      puts "blue #{@blue}, green #{@green}, purple #{@purple}, red #{@red}, cyan #{@cyan} and white #{@white}"
-    when 'Rules'
-      help_txt
+  def asking_help(input_from_user)
+    input_from_user.each do |input|
+      case input.capitalize!
+      when 'Colors'
+        color_create
+        puts "blue #{@blue}, green #{@green}, purple #{@purple}, red #{@red}, cyan #{@cyan} and white #{@white}"
+      when 'Help'
+        help_txt
+      end
     end
   end
 
@@ -38,6 +42,7 @@ module Tools
 
   private
 
+  @@history = []
   # method used to print the code as a line
   def show_code(array)
     array.map { |color| print("#{color} ") }
@@ -79,11 +84,79 @@ module Tools
   end
 
   # check for the win or keep going
-  def compare_with_code(player_choise, cripted_code)
-    return end_game(player_choise, cripted_code) if player_choise == cripted_code
+  def compare_with_code(player_choise, code, copy_of_code)
+    return end_game(player_choise, code) if player_choise == code
 
-    check_color(player_choise)
+    check_color(player_choise, code, copy_of_code)
   end
+
+  # checks the user input and convert it to the colors array
+  def check_input(player_choise)
+    input = gets.chomp
+    input_array = input.split(" ").slice(0, 4)
+    if input_array.size == 4 
+      input_array.each do |i|
+        color = i.to_s.slice(0)
+        case color
+        when 'b'
+          @player_choise.push(@blue)
+        when 'r'
+          @player_choise.push(@red)
+        when 'c'
+          @player_choise.push(@cyan)
+        when 'g'
+          @player_choise.push(@green)
+        when 'p'
+          @player_choise.push(@purple)
+        when 'w'
+          @player_choise.push(@white)
+        end
+      end
+      if @player_choise.size == 4
+        @player_choise
+      else
+        @player_choise = [] 
+        puts "Enter a valid combination of colors!"
+        check_input(player_choise)
+      end
+    elsif input_array.include?("help") or input_array.include?("colors")
+      asking_help(input_array)
+      @player_choise = []
+      print "\nChoose what color you wanna place from left to right in a single line
+      (ex: blue, w, g r) or ask for help with 'help' or 'colors': "
+      check_input(player_choise)
+
+    else
+      puts "Enter a valid combination of colors!"
+      check_input(player_choise)
+    end
+
+  end
+
+  # gives the user a feedback with hints for the choise he made
+  def check_color(player_input, code, copy_of_code)  
+    hint_array = []
+    copy = copy_of_code.clone
+    player_input.each_with_index do |color, index| # checks if the current color is in the right place
+      if copy.include?(color) && (code[index] == color)
+        copy[index] = '-'
+        hint_array.push(@@REDBALL)
+      end
+      hint_array
+    end
+    player_input.each do |color| # check if the color is in the code
+      if copy.include?(color)
+        hint_array.push(@@WHITEBALL)
+        copy.each_with_index { |color_inside, index| break copy.delete_at(index) if color == color_inside }
+      end
+      hint_array # array which contain the hints
+    end
+    hint_array.shuffle!
+    @@history.push(player_input)
+    @@history.push(hint_array)
+    show_history(@@history)
+  end
+
 end
 
 # class that create an object which contain the code to decript
@@ -122,17 +195,13 @@ end
 
 # cotain the methods that ask useres for input and display them showing the play-ground
 class User_play < Code
-  include Tools
-
-  @@WHITEBALL = '◉'.gray
-  @@REDBALL = '◉'.red
+  include Tools  
 
   private
 
   def initialize
     help_txt
-    Code.new
-    @@history = []
+    Code.new    
     @copy_of_cripted = @@cripted.clone
     create_playground
   end
@@ -144,8 +213,7 @@ class User_play < Code
     @end = false
     until @tries.zero? || @end == true # tries is the difficulty, i will implement a selector for it
       puts "\nYou still have: #{@tries} tries"
-      asking_help if @tries.even?
-      compare_with_code(gets_player_choise, @@cripted)
+      compare_with_code(gets_player_choise, @@cripted, @copy_of_cripted)
       @tries -= 1
     end
     if @end == false
@@ -157,6 +225,7 @@ class User_play < Code
     puts 'It was a pleasure to play with you bye bye !'
   end
 
+  # asks for how many tries it should go on 
   def get_tries
     tries_array = Range.new(1, 15).to_a
     @tries = gets.chomp.to_i
@@ -166,66 +235,16 @@ class User_play < Code
     get_tries
   end
 
+  # gets the input from the player
   def gets_player_choise
     color_create
     @player_choise = []
-    @@number_of_colors.times do |n|
-      print "Choose what color you wanna place in position #{n + 1}: "
-      @player_choise.push(check_input)
-    end
+    print "\nChoose what color you wanna place from left to right in a single line
+    (ex: blue, w, g r) or ask for help with 'help' or 'colors': "
+    check_input(@player_choise)  
     @player_choise
-  end
-
-  def check_input
-    input = gets.chomp.downcase.slice(0)
-    case input
-    when 'b'
-      puts @blue
-      @blue
-    when 'r'
-      puts @red
-      @red
-    when 'c'
-      puts @cyan
-      @cyan
-    when 'g'
-      puts @green
-      @green
-    when 'p'
-      puts @purple
-      @purple
-    when 'w'
-      puts @white
-      @white
-    else
-      print 'Invalid choise, try another color: '
-      check_input
-    end
-  end
-
-  # gives the user a feedback with hints for the choise he made
-  def check_color(player_input)
-    hint_array = []
-    copy = @copy_of_cripted.clone
-    player_input.each_with_index do |color, index| # checks if the current color is in the right place
-      if copy.include?(color) && (@@cripted[index] == color)
-        copy[index] = '-'
-        hint_array.push(@@REDBALL)
-      end
-      hint_array
-    end
-    player_input.each do |color| # check if the color is in the code
-      if copy.include?(color)
-        hint_array.push(@@WHITEBALL)
-        copy.each_with_index { |color_inside, index| break copy.delete_at(index) if color == color_inside }
-      end
-      hint_array # array which contain the hints
-    end
-    hint_array.shuffle!
-    @@history.push(player_input)
-    @@history.push(hint_array)
-    show_history(@@history)
   end
 end
 
 User_play.new
+
