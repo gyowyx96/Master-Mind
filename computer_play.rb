@@ -23,7 +23,7 @@ class CodeCreator
   end
 end
 
-class PcGuessPcPlayerOnly
+class PcGuess
   include Tools
   include PcPlayerOnly
 
@@ -45,7 +45,7 @@ class PcGuessPcPlayerOnly
     tries = 1
     @end = false
     until tries == 100 || @end == true
-      puts "Tries n°#{tries}"
+      puts "Try n°#{tries}"
       input_exam(computer_choice) if @all_white_two_red == false
       swap_red if @all_white_two_red == true
       tries += 1
