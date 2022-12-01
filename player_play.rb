@@ -19,7 +19,7 @@ class Code
     @to_be_cripted = [@blue, @green, @purple, @red, @cyan, @white]
     print 'Allow duplicate y/n? '
     duplicate?
-    return @@cripted = @to_be_cripted.shuffle.slice(0, number_of_colors) if @duplicate == 'N'
+    return @@cripted = @to_be_cripted.shuffle.slice(0, number_of_colors) if @duplicate == 'n'
 
     2.times do
       @to_be_cripted += @to_be_cripted
