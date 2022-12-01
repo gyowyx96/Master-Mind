@@ -28,7 +28,7 @@ class Code
   end
 
   def duplicate?
-    @duplicate = gets.chomp.slice(0).downcase
+    @duplicate = gets.chomp.slice(0)
     return unless @duplicate != 'y' && @duplicate != 'n'
 
     print 'Type a valid value! '
@@ -37,7 +37,7 @@ class Code
 end
 
 # cotain the methods that ask useres for input and display them showing the play-ground
-class User_play < Code
+class UserPlay < Code
   include Tools
 
   private
@@ -65,7 +65,7 @@ class User_play < Code
       show_code(@@cripted)
       puts ''
     end
-    replay    
+    replay
   end
 
   # asks for how many tries it should go on

@@ -147,9 +147,9 @@ module Tools
   def replay
     print 'Do you wanna play again? y/n: '
     asked_input = gets.chomp.capitalize!.slice(0)
-    return puts 'It was a pleasure to play with you bye bye !'unless asked_input == 'Y'
+    return puts 'It was a pleasure to play with you bye bye !' unless asked_input == 'Y'
 
-    Player_selector.new
+    PlayerSelector.new
   end
 
   def show_history(history)
@@ -202,7 +202,7 @@ module Tools
         puts 'Enter a valid combination of colors!'
         check_input(player_choice)
       end
-    elsif input_array.include?('help') or input_array.include?('colors')
+    elsif input_array.include?('help') || input_array.include?('colors')
       asking_help(input_array)
       @player_choice = []
       print "\nChoose the colors you wanna place in your code: "
@@ -230,7 +230,6 @@ module Tools
         @hint_array.push(WHITEBALL)
         copy.each_with_index { |color_inside, index| break copy.delete_at(index) if color == color_inside }
       end
-      @hint_array # array which contain the hints
     end
     @hint_array.shuffle!
     @@history.push(player_input)
@@ -238,38 +237,43 @@ module Tools
     show_history(@@history)
     @hint_array
   end
+end
 
-  ### PC PLAYER ONLY ###
-  
+module PcPlayerOnly
+  WHITEBALL = '◉'.gray
+  REDBALL = '◉'.red
+
+  private
+
   def create_variable
     color_create
     @all_white_two_red = false
     @reverse_array = []
     @last_choice = []
     @last_red = 0
-    @last_color = ""
+    @last_color = ''
     @last_hint_length = 0
     @color_to_change = []
     @color_to_pick = [@blue, @green, @purple, @red, @cyan, @white]
     @possibilites = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]
   end
 
-  def check_status(hints, computer_choice)    
+  def check_status(hints, computer_choice)
     if hints.empty?
-      computer_choice.each {|color| @color_to_pick.delete(color) if @color_to_pick.include?(color)}
+      computer_choice.each { |color| @color_to_pick.delete(color) if @color_to_pick.include?(color) }
       computer_choice = @color_to_pick.slice(0, 4)
     else
       check_hints_array(hints)
       check_length
-      change_position(computer_choice)      
-      @last_red = @number_of_red      
-    end  
+      change_position(computer_choice)
+      @last_red = @number_of_red
+    end
   end
 
   def check_hints_array(hints)
     @number_of_white = 0
     @number_of_red = 0
-    hints.each do |value| 
+    hints.each do |value|
       @number_of_white += 1 if value == WHITEBALL
       @number_of_red += 1 if value == REDBALL
     end
@@ -280,27 +284,25 @@ module Tools
       @color_to_pick.delete(@computer_choice.shift)
       @computer_choice.unshift(@color_to_change.pop)
       @color_to_pick.shuffle!
-      @color_to_change.push(@color_to_pick[0])          
+      @color_to_change.push(@color_to_pick[0])
     end
     @last_hint_length = @hint_array.length
-    @color_to_change.uniq!    
+    @color_to_change.uniq!
   end
-  
-  def change_ball(n, computer_choice)
-    n.times do
-      @color_to_change.push(computer_choice.pop)
-      @color_to_pick.each do |color|
-        if color != @last_color && !computer_choice.include?(color)
-          @last_color = color
-          @color_to_pick.shuffle!
-          return computer_choice.unshift(color)
-        end
-      end
-      @color_to_change.each do |color|
-        if color != @last_color && !computer_choice.include?(color)
-          @last_color = color
-          return computer_choice.unshift(color)
-        end
+
+  def change_ball(computer_choice)
+    @color_to_change.push(computer_choice.pop)
+    @color_to_pick.each do |color|
+      next unless color != @last_color && !computer_choice.include?(color)
+
+      @last_color = color
+      @color_to_pick.shuffle!
+      return computer_choice.unshift(color)
+    end
+    @color_to_change.each do |color|
+      if color != @last_color && !computer_choice.include?(color)
+        @last_color = color
+        return computer_choice.unshift(color)
       end
     end
   end
